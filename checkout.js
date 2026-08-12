@@ -5,6 +5,9 @@ const initialQty = params.get('qty') || '10.000';
 const initialPrice = parseFloat(params.get('price') || '99.90');
 const discountParam = params.get('discount') || '';
 
+// Is this a "post-level" service? (curtidas, curtidas-br, views)
+const isPostService = ['curtidas', 'curtidas-br', 'views'].includes(serviceType);
+
 // ===== SERVICE TIERS DATABASE (EXACT MATCHING APP.JS) =====
 const serviceTiers = {
   'seguidores': [
@@ -57,10 +60,8 @@ const serviceNames = {
 };
 const serviceName = serviceNames[serviceType] || 'Seguidores';
 
-// Get active tiers for selected service
 const currentTiers = serviceTiers[serviceType] || serviceTiers['seguidores'];
 
-// Find tier index matching initialQty
 let activeStepIdx = currentTiers.findIndex(t => t.qty.replace(/\./g, '') === initialQty.replace(/\./g, ''));
 if (activeStepIdx === -1) {
   activeStepIdx = currentTiers.findIndex(t => Math.abs(t.price - initialPrice) < 0.1);
@@ -69,12 +70,13 @@ if (activeStepIdx === -1) {
 
 let selectedTier = currentTiers[activeStepIdx];
 let currentBasePrice = selectedTier.price;
+let selectedPostUrl = ''; // For post-level services
 
 function formatBRL(val) {
   return 'R$ ' + val.toFixed(2).replace('.', ',');
 }
 
-// ===== UPSELL VARIABLES (must be before updateTierUI) =====
+// ===== UPSELL VARIABLES =====
 let upsells = { curtidas: false, views: false };
 let upsellPrices = { curtidas: 60, views: 57 };
 let totalExtras = 0;
@@ -94,7 +96,6 @@ function recalcTotal() {
   document.getElementById('ck-total-val').textContent = formatBRL(total);
 }
 
-// ===== POPULATE PAGE INITIAL STATE =====
 function updateTierUI(tier) {
   selectedTier = tier;
   currentBasePrice = tier.price;
@@ -115,65 +116,84 @@ function updateTierUI(tier) {
   recalcTotal();
 }
 
-// Initial populate
 updateTierUI(selectedTier);
+
+// Update profile label for post services
+if (isPostService) {
+  const profileLabel = document.querySelector('label[for="ck-profile"]');
+  if (profileLabel) profileLabel.textContent = '@ do Perfil ou link da Publicação';
+}
 
 // ===== INSTAGRAM PROFILE PREVIEW =====
 let profileDebounce = null;
+let profileData = null;
 const profileInput = document.getElementById('ck-profile');
 profileInput.addEventListener('input', function() {
   clearTimeout(profileDebounce);
   const raw = this.value.trim();
-  profileDebounce = setTimeout(() => fetchProfilePreview(raw), 600);
+  profileDebounce = setTimeout(() => fetchProfilePreview(raw), 800);
 });
 
 function extractUsername(input) {
-  // Remove @ prefix
   let u = input.replace(/^@/, '');
-  // Extract from URL like instagram.com/username
+  // Extract from post URL
+  const postMatch = u.match(/instagram\.com\/p\/([a-zA-Z0-9_-]+)/);
+  if (postMatch) {
+    // It's a post URL, extract the post shortcode — we still need the profile
+    selectedPostUrl = input;
+  }
+  // Extract from profile URL
   const urlMatch = u.match(/instagram\.com\/([a-zA-Z0-9._]+)/);
   if (urlMatch) u = urlMatch[1];
-  // Clean any trailing slashes or query params
   u = u.split(/[?/]/)[0];
   return u;
 }
 
 async function fetchProfilePreview(raw) {
   const preview = document.getElementById('ck-profile-preview');
+  const postsGrid = document.getElementById('ck-posts-grid');
   const username = extractUsername(raw);
 
   if (!username || username.length < 2) {
     preview.style.display = 'none';
+    if (postsGrid) postsGrid.style.display = 'none';
     return;
   }
 
+  // Show loading state
+  preview.style.display = 'flex';
+  document.getElementById('ck-profile-pic').src = `https://ui-avatars.com/api/?name=${username}&background=E1306C&color=fff&size=80&bold=true`;
+  document.getElementById('ck-profile-name').textContent = username;
+  document.getElementById('ck-profile-followers').textContent = '...';
+  document.getElementById('ck-profile-following').textContent = '...';
+  document.getElementById('ck-profile-posts').textContent = '...';
+
   try {
-    // Use a public proxy to fetch Instagram profile data
-    const res = await fetch(`https://www.instagram.com/api/v1/users/web_profile_info/?username=${username}`, {
-      headers: { 'x-ig-app-id': '936619743392459' }
-    });
+    const res = await fetch(`/api/instagram-profile?username=${encodeURIComponent(username)}`);
+    const data = await res.json();
 
-    if (!res.ok) throw new Error('not found');
-    const json = await res.json();
-    const user = json.data?.user;
+    if (!data.success) throw new Error(data.error);
 
-    if (!user) throw new Error('no user');
+    profileData = data;
 
-    // Populate preview
-    document.getElementById('ck-profile-pic').src = user.profile_pic_url || '';
-    document.getElementById('ck-profile-name').textContent = user.username;
-    document.getElementById('ck-profile-followers').textContent = formatCount(user.edge_followed_by?.count || 0);
-    document.getElementById('ck-profile-following').textContent = formatCount(user.edge_follow?.count || 0);
-    document.getElementById('ck-profile-posts').textContent = formatCount(user.edge_owner_to_timeline_media?.count || 0);
-    preview.style.display = 'flex';
+    // Update preview card
+    document.getElementById('ck-profile-pic').src = data.profile_pic || `https://ui-avatars.com/api/?name=${username}&background=E1306C&color=fff&size=80&bold=true`;
+    document.getElementById('ck-profile-name').textContent = data.username;
+    document.getElementById('ck-profile-followers').textContent = formatCount(data.followers);
+    document.getElementById('ck-profile-following').textContent = formatCount(data.following);
+    document.getElementById('ck-profile-posts').textContent = formatCount(data.posts_count);
+
+    // Show posts grid for post-level services
+    if (isPostService && data.posts && data.posts.length > 0 && postsGrid) {
+      renderPostsGrid(data.posts);
+    }
+
   } catch (err) {
-    // Fallback: show preview with placeholder data from username
-    document.getElementById('ck-profile-pic').src = `https://ui-avatars.com/api/?name=${username}&background=E1306C&color=fff&size=80&bold=true`;
-    document.getElementById('ck-profile-name').textContent = username;
+    // Keep showing fallback avatar
     document.getElementById('ck-profile-followers').textContent = '-';
     document.getElementById('ck-profile-following').textContent = '-';
     document.getElementById('ck-profile-posts').textContent = '-';
-    preview.style.display = 'flex';
+    if (postsGrid) postsGrid.style.display = 'none';
   }
 }
 
@@ -181,6 +201,99 @@ function formatCount(num) {
   if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.0', '') + ' mi';
   if (num >= 1000) return (num / 1000).toFixed(1).replace('.0', '') + ' mil';
   return num.toString();
+}
+
+// ===== POST SELECTION GRID =====
+function renderPostsGrid(posts) {
+  const container = document.getElementById('ck-posts-grid');
+  if (!container) return;
+
+  const maxShow = 3;
+  const remaining = posts.length - maxShow;
+
+  let html = '<p class="ck-posts-hint">👇 Clique em uma publicação para selecionar</p>';
+  html += '<div class="ck-posts-thumbs">';
+
+  posts.slice(0, maxShow).forEach((post, idx) => {
+    const activeClass = idx === 0 ? ' selected' : '';
+    html += `
+      <div class="ck-post-thumb${activeClass}" data-url="${post.url}" data-shortcode="${post.shortcode}" onclick="selectPost(this)">
+        <img src="${post.thumbnail}" alt="Post" loading="lazy">
+        <div class="ck-post-overlay">
+          <span>❤ ${formatCount(post.likes)}</span>
+          <span>💬 ${formatCount(post.comments)}</span>
+        </div>
+        ${idx === 0 ? '<div class="ck-post-check">✓</div>' : ''}
+        ${post.is_video ? '<div class="ck-post-video">▶</div>' : ''}
+      </div>`;
+  });
+
+  html += '</div>';
+
+  if (remaining > 0) {
+    html += `<button type="button" class="ck-posts-more" onclick="showAllPosts()">Ver mais... (+${remaining})</button>`;
+  }
+
+  container.innerHTML = html;
+  container.style.display = 'block';
+
+  // Auto-select first post
+  if (posts.length > 0) {
+    selectedPostUrl = posts[0].url;
+  }
+
+  // Store full posts for "show more"
+  container._allPosts = posts;
+}
+
+function selectPost(el) {
+  // Deselect all
+  document.querySelectorAll('.ck-post-thumb').forEach(t => {
+    t.classList.remove('selected');
+    const check = t.querySelector('.ck-post-check');
+    if (check) check.remove();
+  });
+
+  // Select this one
+  el.classList.add('selected');
+  const checkDiv = document.createElement('div');
+  checkDiv.className = 'ck-post-check';
+  checkDiv.textContent = '✓';
+  el.appendChild(checkDiv);
+
+  selectedPostUrl = el.getAttribute('data-url');
+}
+
+function showAllPosts() {
+  const container = document.getElementById('ck-posts-grid');
+  const allPosts = container._allPosts;
+  if (!allPosts) return;
+  renderPostsGridFull(allPosts);
+}
+
+function renderPostsGridFull(posts) {
+  const container = document.getElementById('ck-posts-grid');
+
+  let html = '<p class="ck-posts-hint">👇 Clique em uma publicação para selecionar</p>';
+  html += '<div class="ck-posts-thumbs ck-posts-thumbs-full">';
+
+  posts.forEach((post, idx) => {
+    const activeClass = post.url === selectedPostUrl ? ' selected' : '';
+    html += `
+      <div class="ck-post-thumb${activeClass}" data-url="${post.url}" data-shortcode="${post.shortcode}" onclick="selectPost(this)">
+        <img src="${post.thumbnail}" alt="Post" loading="lazy">
+        <div class="ck-post-overlay">
+          <span>❤ ${formatCount(post.likes)}</span>
+          <span>💬 ${formatCount(post.comments)}</span>
+        </div>
+        ${post.url === selectedPostUrl ? '<div class="ck-post-check">✓</div>' : ''}
+        ${post.is_video ? '<div class="ck-post-video">▶</div>' : ''}
+      </div>`;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+  container._allPosts = posts;
 }
 
 // ===== UPSELL TOGGLE =====
@@ -201,17 +314,14 @@ function toggleUpsell(type, extraPrice) {
   recalcTotal();
 }
 
-// ===== SLIDER LOGIC (MATCHES SPECIFIC SERVICE TIERS) =====
+// ===== SLIDER =====
 const slider = document.getElementById('ck-slider');
 const maxSteps = currentTiers.length - 1;
-
-// Set slider initial value
 slider.value = maxSteps > 0 ? (activeStepIdx / maxSteps) * 100 : 0;
 
 slider.addEventListener('input', function() {
   const stepIdx = maxSteps > 0 ? Math.round((this.value / 100) * maxSteps) : 0;
-  const newTier = currentTiers[stepIdx];
-  updateTierUI(newTier);
+  updateTierUI(currentTiers[stepIdx]);
 });
 
 // ===== CHECKOUT → IRONPAY PIX =====
@@ -229,7 +339,9 @@ async function handleCheckout(e) {
   const totalAmount = currentBasePrice + totalExtras;
   const currentQty = document.getElementById('ck-qty').textContent;
 
-  // Disable button and show loading
+  // For post-level services, use the selected post URL or the input value
+  const finalProfile = isPostService && selectedPostUrl ? selectedPostUrl : profile;
+
   const payBtn = document.querySelector('.ck-pay-btn');
   payBtn.disabled = true;
   payBtn.innerHTML = '<div class="ck-btn-spinner"></div> Gerando PIX...';
@@ -245,7 +357,7 @@ async function handleCheckout(e) {
         name,
         email,
         whatsapp,
-        profile,
+        profile: finalProfile,
       }),
     });
 
@@ -255,7 +367,6 @@ async function handleCheckout(e) {
       throw new Error(data.error || 'Erro ao gerar PIX.');
     }
 
-    // Show PIX section
     showPixResult(data);
 
   } catch (err) {
@@ -269,16 +380,13 @@ async function handleCheckout(e) {
 
 // ===== SHOW PIX RESULT =====
 function showPixResult(data) {
-  // Hide form, show PIX
   document.getElementById('checkoutForm').style.display = 'none';
   const pixResult = document.getElementById('pix-result');
   pixResult.style.display = 'block';
 
-  // QR Code image generator
   const qrImg = document.getElementById('pix-qr-img');
   if (data.pix_code) {
-    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(data.pix_code);
-    qrImg.src = qrUrl;
+    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(data.pix_code);
     qrImg.style.display = 'block';
   } else if (data.pix_qr_image) {
     qrImg.src = data.pix_qr_image;
@@ -287,17 +395,13 @@ function showPixResult(data) {
     qrImg.style.display = 'none';
   }
 
-  // PIX code for copy
-  const pixInput = document.getElementById('pix-code-input');
-  pixInput.value = data.pix_code || '';
+  document.getElementById('pix-code-input').value = data.pix_code || '';
 
-  // Start polling for payment status
   if (data.transaction_hash) {
     startPaymentPolling(data.transaction_hash);
   }
 }
 
-// ===== COPY PIX CODE =====
 function copyPixCode() {
   const input = document.getElementById('pix-code-input');
   input.select();
@@ -306,40 +410,28 @@ function copyPixCode() {
     const btn = document.querySelector('.ck-copy-btn');
     btn.textContent = '✅ COPIADO!';
     btn.style.background = '#10b981';
-    setTimeout(() => {
-      btn.textContent = 'COPIAR PIX';
-      btn.style.background = '';
-    }, 3000);
+    setTimeout(() => { btn.textContent = 'COPIAR PIX'; btn.style.background = ''; }, 3000);
   });
 }
 
-// ===== POLL PAYMENT STATUS =====
 let pollInterval;
 function startPaymentPolling(hash) {
   let attempts = 0;
-  const maxAttempts = 360; // 30 minutes (every 5s)
-
   pollInterval = setInterval(async () => {
     attempts++;
-    if (attempts > maxAttempts) {
+    if (attempts > 360) {
       clearInterval(pollInterval);
       document.getElementById('pix-status').innerHTML = '<span style="color:#ef4444">⏰ Tempo expirado. Gere um novo PIX.</span>';
       return;
     }
-
     try {
       const res = await fetch('/api/transaction/' + hash);
       const data = await res.json();
-
-      const status = data.payment_status || data.status;
-      if (status === 'paid') {
+      if ((data.payment_status || data.status) === 'paid') {
         clearInterval(pollInterval);
         document.getElementById('pix-status').innerHTML = '<span style="color:#10b981;font-weight:700;font-size:1.1rem">✅ Pagamento Confirmado! Seu pedido está sendo processado.</span>';
         document.getElementById('pix-status').style.background = 'rgba(16,185,129,0.08)';
-        document.getElementById('pix-status').style.borderColor = 'rgba(16,185,129,0.3)';
       }
-    } catch (err) {
-      // silently continue polling
-    }
+    } catch (err) {}
   }, 5000);
 }
