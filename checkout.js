@@ -124,7 +124,22 @@ if (isPostService) {
   if (profileLabel) profileLabel.textContent = '@ do Perfil ou link da Publicação';
 }
 
-
+// ===== WHATSAPP AUTO MASK (DDD + 9 DÍGITOS) =====
+const whatsappInput = document.getElementById('ck-whatsapp');
+if (whatsappInput) {
+  whatsappInput.addEventListener('input', function(e) {
+    let digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length === 0) {
+      e.target.value = '';
+    } else if (digits.length <= 2) {
+      e.target.value = `(${digits}`;
+    } else if (digits.length <= 7) {
+      e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else {
+      e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    }
+  });
+}
 
 // ===== UPSELL TOGGLE =====
 function toggleUpsell(type, extraPrice) {
@@ -163,6 +178,12 @@ async function handleCheckout(e) {
   const email = document.getElementById('ck-email').value.trim();
   const whatsapp = document.getElementById('ck-whatsapp').value.trim();
   const termsOk = document.getElementById('ck-terms').checked;
+
+  const rawPhone = whatsapp.replace(/\D/g, '');
+  if (rawPhone.length < 11) {
+    alert('Por favor, informe seu WhatsApp completo com DDD + 9 dígitos (ex: 11 99999-9999).');
+    return false;
+  }
 
   if (!termsOk) { alert('Você precisa aceitar os termos de uso.'); return false; }
 
