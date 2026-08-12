@@ -63,7 +63,6 @@ const currentTiers = serviceTiers[serviceType] || serviceTiers['seguidores'];
 // Find tier index matching initialQty
 let activeStepIdx = currentTiers.findIndex(t => t.qty.replace(/\./g, '') === initialQty.replace(/\./g, ''));
 if (activeStepIdx === -1) {
-  // Check by price if qty not matched directly
   activeStepIdx = currentTiers.findIndex(t => Math.abs(t.price - initialPrice) < 0.1);
   if (activeStepIdx === -1) activeStepIdx = 0;
 }
@@ -119,14 +118,70 @@ function updateTierUI(tier) {
 // Initial populate
 updateTierUI(selectedTier);
 
-// ===== CPF MASK =====
-document.getElementById('ck-cpf').addEventListener('input', function(e) {
-  let v = e.target.value.replace(/\D/g, '').slice(0, 11);
-  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
-  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
-  else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
-  e.target.value = v;
+// ===== INSTAGRAM PROFILE PREVIEW =====
+let profileDebounce = null;
+const profileInput = document.getElementById('ck-profile');
+profileInput.addEventListener('input', function() {
+  clearTimeout(profileDebounce);
+  const raw = this.value.trim();
+  profileDebounce = setTimeout(() => fetchProfilePreview(raw), 600);
 });
+
+function extractUsername(input) {
+  // Remove @ prefix
+  let u = input.replace(/^@/, '');
+  // Extract from URL like instagram.com/username
+  const urlMatch = u.match(/instagram\.com\/([a-zA-Z0-9._]+)/);
+  if (urlMatch) u = urlMatch[1];
+  // Clean any trailing slashes or query params
+  u = u.split(/[?/]/)[0];
+  return u;
+}
+
+async function fetchProfilePreview(raw) {
+  const preview = document.getElementById('ck-profile-preview');
+  const username = extractUsername(raw);
+
+  if (!username || username.length < 2) {
+    preview.style.display = 'none';
+    return;
+  }
+
+  try {
+    // Use a public proxy to fetch Instagram profile data
+    const res = await fetch(`https://www.instagram.com/api/v1/users/web_profile_info/?username=${username}`, {
+      headers: { 'x-ig-app-id': '936619743392459' }
+    });
+
+    if (!res.ok) throw new Error('not found');
+    const json = await res.json();
+    const user = json.data?.user;
+
+    if (!user) throw new Error('no user');
+
+    // Populate preview
+    document.getElementById('ck-profile-pic').src = user.profile_pic_url || '';
+    document.getElementById('ck-profile-name').textContent = user.username;
+    document.getElementById('ck-profile-followers').textContent = formatCount(user.edge_followed_by?.count || 0);
+    document.getElementById('ck-profile-following').textContent = formatCount(user.edge_follow?.count || 0);
+    document.getElementById('ck-profile-posts').textContent = formatCount(user.edge_owner_to_timeline_media?.count || 0);
+    preview.style.display = 'flex';
+  } catch (err) {
+    // Fallback: show preview with placeholder data from username
+    document.getElementById('ck-profile-pic').src = `https://ui-avatars.com/api/?name=${username}&background=E1306C&color=fff&size=80&bold=true`;
+    document.getElementById('ck-profile-name').textContent = username;
+    document.getElementById('ck-profile-followers').textContent = '-';
+    document.getElementById('ck-profile-following').textContent = '-';
+    document.getElementById('ck-profile-posts').textContent = '-';
+    preview.style.display = 'flex';
+  }
+}
+
+function formatCount(num) {
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.0', '') + ' mi';
+  if (num >= 1000) return (num / 1000).toFixed(1).replace('.0', '') + ' mil';
+  return num.toString();
+}
 
 // ===== UPSELL TOGGLE =====
 function toggleUpsell(type, extraPrice) {
@@ -167,11 +222,9 @@ async function handleCheckout(e) {
   const name = document.getElementById('ck-name').value.trim();
   const email = document.getElementById('ck-email').value.trim();
   const whatsapp = document.getElementById('ck-whatsapp').value.trim();
-  const cpf = document.getElementById('ck-cpf').value.trim();
   const termsOk = document.getElementById('ck-terms').checked;
 
   if (!termsOk) { alert('Você precisa aceitar os termos de uso.'); return false; }
-  if (cpf.replace(/\D/g, '').length < 11) { alert('CPF inválido.'); return false; }
 
   const totalAmount = currentBasePrice + totalExtras;
   const currentQty = document.getElementById('ck-qty').textContent;
@@ -192,7 +245,6 @@ async function handleCheckout(e) {
         name,
         email,
         whatsapp,
-        cpf,
         profile,
       }),
     });

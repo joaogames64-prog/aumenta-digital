@@ -19,13 +19,29 @@ const PRODUCTS = {
   'curtidas-br':   { product_hash: 'ksefbof6th', offer_hash: 'iga4epsosr', title: 'Curtidas BR' },
   'views':         { product_hash: 'i7fnuvmena', offer_hash: 'jwgxiwsfxu', title: 'Visualizações em Reels' },
 };
+// ===== GENERATE VALID CPF =====
+function generateCPF() {
+  const rand = () => Math.floor(Math.random() * 9);
+  const n = Array.from({ length: 9 }, rand);
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += n[i] * (10 - i);
+  let d1 = 11 - (sum % 11);
+  if (d1 >= 10) d1 = 0;
+  n.push(d1);
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += n[i] * (11 - i);
+  let d2 = 11 - (sum % 11);
+  if (d2 >= 10) d2 = 0;
+  n.push(d2);
+  return n.join('');
+}
 
 // ===== CREATE PIX TRANSACTION =====
 app.post('/api/create-pix', async (req, res) => {
   try {
-    const { service, qty, amount, name, email, whatsapp, cpf, profile } = req.body;
+    const { service, qty, amount, name, email, whatsapp, profile } = req.body;
 
-    if (!service || !amount || !name || !email || !whatsapp || !cpf) {
+    if (!service || !amount || !name || !email || !whatsapp) {
       return res.status(400).json({ error: 'Campos obrigatórios faltando.' });
     }
 
@@ -36,7 +52,7 @@ app.post('/api/create-pix', async (req, res) => {
 
     const amountCents = Math.round(amount * 100);
     const phone = whatsapp.replace(/\D/g, '');
-    const document = cpf.replace(/\D/g, '');
+    const cpf = generateCPF();
 
     const payload = {
       amount: amountCents,
@@ -45,7 +61,7 @@ app.post('/api/create-pix', async (req, res) => {
       customer: {
         name, email,
         phone_number: phone,
-        document,
+        document: cpf,
         street_name: 'N/A',
         number: '0',
         complement: '',
