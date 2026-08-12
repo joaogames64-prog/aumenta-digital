@@ -138,10 +138,19 @@ app.get('/api/transaction/:hash', async (req, res) => {
   }
 });
 
+// ===== ROOT ROUTE =====
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // ===== START SERVER =====
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`\n🚀 Aumenta Digital rodando em http://localhost:${PORT}`);
-  console.log(`📦 Checkout: http://localhost:${PORT}/checkout.html`);
-  console.log(`🏠 Home: http://localhost:${PORT}/index.html\n`);
-});
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Aumenta Digital rodando em http://localhost:${PORT}`);
+    console.log(`📦 Checkout: http://localhost:${PORT}/checkout.html`);
+    console.log(`🏠 Home: http://localhost:${PORT}/index.html\n`);
+  });
+}
+
+module.exports = app;
