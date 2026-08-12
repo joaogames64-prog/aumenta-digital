@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ===== IRONPAY CONFIG =====
 const IRONPAY_BASE = 'https://api.ironpayapp.com.br/api/public/v1';
