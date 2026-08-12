@@ -1,4 +1,7 @@
 {
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": ".",
   "rewrites": [
     { "source": "/api/transaction/:hash", "destination": "/api/transaction?hash=:hash" }
   ]
